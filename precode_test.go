@@ -1,6 +1,7 @@
 package main
 
 import (
+	"fmt"
 	"net/http"
 	"net/http/httptest"
 	"strings"
@@ -11,7 +12,12 @@ import (
 
 func TestMainHandlerWhenCountMoreThanTotal(t *testing.T) {
 	totalCount := 4
-	req := httptest.NewRequest(http.MethodGet, "/cafe?count=7&city=moscow", nil) // здесь нужно создать запрос к сервису
+
+	const countForTest = 7
+	const cityForTest = "moscow"
+	strRequest := fmt.Sprintf("/cafe?count=%d&city=%s", countForTest, cityForTest)
+
+	req := httptest.NewRequest(http.MethodGet, strRequest, nil) // здесь нужно создать запрос к сервису
 
 	responseRecorder := httptest.NewRecorder()
 	handler := http.HandlerFunc(mainHandle)
@@ -20,10 +26,15 @@ func TestMainHandlerWhenCountMoreThanTotal(t *testing.T) {
 	// здесь нужно добавить необходимые проверки
 	arrResponce := strings.Split(responseRecorder.Body.String(), ",")
 	assert.Equal(t, totalCount, len(arrResponce))
+	assert.Equal(t, http.StatusOK, responseRecorder.Code)
 }
 
 func TestMainHandlerAnswerCodeAndBodyForEmpty(t *testing.T) {
-	req := httptest.NewRequest(http.MethodGet, "/cafe?count=7&city=moscow", nil) // здесь нужно создать запрос к сервису
+	const countForTest = 3
+	const cityForTest = "moscow"
+	strRequest := fmt.Sprintf("/cafe?count=%d&city=%s", countForTest, cityForTest)
+
+	req := httptest.NewRequest(http.MethodGet, strRequest, nil) // здесь нужно создать запрос к сервису
 
 	responseRecorder := httptest.NewRecorder()
 	handler := http.HandlerFunc(mainHandle)
@@ -35,7 +46,11 @@ func TestMainHandlerAnswerCodeAndBodyForEmpty(t *testing.T) {
 }
 
 func TestMainHandlerWhenCityInRequestIsWrong(t *testing.T) {
-	req := httptest.NewRequest(http.MethodGet, "/cafe?count=7&city=spb", nil) // здесь нужно создать запрос к сервису
+	const countForTest = 7
+	const cityForTest = "spb"
+	strRequest := fmt.Sprintf("/cafe?count=%d&city=%s", countForTest, cityForTest)
+
+	req := httptest.NewRequest(http.MethodGet, strRequest, nil) // здесь нужно создать запрос к сервису
 
 	responseRecorder := httptest.NewRecorder()
 	handler := http.HandlerFunc(mainHandle)
